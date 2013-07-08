@@ -5,9 +5,9 @@
 
 var Backbone = require('backbone')
   , BackboneModel = require('backbone-model')
-  , debug = require('debug')('component-base-model')
-  , pusher = require('component-pusher') 
-  , XHR = require('component-xhr');
+  , debug = require('debug')('base-model')
+  , pusher = require('pusher') 
+  , XHR = require('xhr');
 
 /**
  * Expose `BaseModel`
