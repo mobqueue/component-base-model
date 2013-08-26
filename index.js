@@ -23,34 +23,47 @@ var BaseModel = module.exports = BackboneModel.extend({
 
 BaseModel.prototype.initialize = function() {
   if (this.id) {
-    var channelName = this.name + '-' + this.id
-      , channel = pusher.channel(channelName)
-      , self = this;
-
-    if (!channel) {
-      channel = pusher.subscribe(channelName);
-    }
-
-    debug('listening to ', channelName);
-
-    channel.bind('update', function(data) {
-      debug('update', data);
-      self.set(data);
+    this._register();
+  } else {
+    var self = this;
+    this.once('sync', function() {
+      self._register();
     });
-
-    channel.bind('delete', function(data) {
-      self.trigger('destroy', self, self.collection);
-      pusher.unsubscribe(channelName);
-    });
-
-    if (this.user) {
-      this.user.on('logout', function() {
-        pusher.unsubscribe(channelName);
-      });
-    }
   }
 
   this.postInitialize();
+};
+
+/**
+ * Register
+ */
+
+BaseModel.prototype._register = function() {
+  var channelName = this.name + '-' + this.id;
+  var channel = pusher.channel(channelName);
+  var self = this;
+
+  if (!channel) {
+    channel = pusher.subscribe(channelName);
+  }
+
+  debug('listening to ', channelName);
+
+  channel.bind('update', function(data) {
+    debug('update', data);
+    self.set(data);
+  });
+
+  channel.bind('delete', function(data) {
+    self.trigger('destroy', self, self.collection);
+    pusher.unsubscribe(channelName);
+  });
+
+  if (this.user) {
+    this.user.on('logout', function() {
+      pusher.unsubscribe(channelName);
+    });
+  }
 };
 
 /**
