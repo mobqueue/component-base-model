@@ -6,7 +6,7 @@
 var Backbone = require('backbone')
   , BackboneModel = require('backbone-model')
   , debug = require('debug')('base-model')
-  , pusher = require('pusher') 
+  , pusher = require('pusher')
   , XHR = require('xhr');
 
 /**
@@ -86,7 +86,9 @@ BaseModel.prototype.sync = function(method, model, options) {
   }
 
   options.headers = XHR.getHeaders();
-  options.xhrFields = { withCredentials: window.device === undefined };
+  options.xhrFields = {
+    withCredentials: window.device === undefined && options.url.indexOf('private') !== -1
+  };
 
   debug('sync', method, model, options);
 
